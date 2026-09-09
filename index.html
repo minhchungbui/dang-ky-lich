@@ -1,0 +1,1400 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đăng ký lịch làm việc</title>
+<style>
+  :root{
+    --paper:#F5F7F8; --surface:#FFFFFF; --ink:#152029; --muted:#67757F;
+    --line:#DCE3E7; --line-strong:#B9C4CB;
+    --accent:#0F6B63; --accent-soft:#E2F0EE; --accent-ink:#0A4F49;
+    --weekend:#F0F3F5; --danger:#9A3B22; --ok:#2E6B34; --warn:#8A5A12;
+    --r:6px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper); color:var(--ink);
+    font:15px/1.5 "Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 18px 60px}
+  h1{font-size:22px;font-weight:650;letter-spacing:-.01em;margin:0}
+  h2{font-size:16px;font-weight:650;margin:0 0 10px}
+  h3{font-size:14px;font-weight:650;margin:18px 0 8px}
+  p.sub{margin:4px 0 0;color:var(--muted);font-size:13.5px}
+  .topbar{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between;
+    border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px}
+  .tabs{display:flex;gap:2px;background:#E8EDF0;padding:3px;border-radius:8px}
+  .tabs button{border:0;background:transparent;padding:7px 14px;border-radius:6px;cursor:pointer;
+    font:inherit;font-weight:550;color:var(--muted)}
+  .tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(21,32,41,.12)}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .panel + .panel{margin-top:16px}
+  .row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+  label.f{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--muted);font-weight:550}
+  input,select{font:inherit;padding:8px 10px;border:1px solid var(--line-strong);border-radius:var(--r);
+    background:var(--surface);color:var(--ink);min-width:0}
+  input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  input[type=time]{width:110px}
+  button{font:inherit;cursor:pointer}
+  .btn{border:1px solid var(--line-strong);background:var(--surface);padding:8px 13px;border-radius:var(--r);font-weight:550}
+  .btn:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{background:var(--accent-ink);color:#fff}
+  .btn.ghost{border-color:transparent;background:#EEF2F4}
+  .btn.sm{padding:5px 9px;font-size:13px}
+  .btn.danger{color:var(--danger);border-color:#E4CFC7}
+  .btn[disabled]{opacity:.55;cursor:progress}
+
+  .banner{border:1px solid #E6D8B8;background:#FDF6E5;color:var(--warn);
+    border-radius:var(--r);padding:10px 12px;font-size:13px;margin-bottom:16px}
+  .banner.bad{border-color:#E4CFC7;background:#FBEEE9;color:var(--danger)}
+  .banner b{font-weight:650}
+  .banner code{background:rgba(0,0,0,.06);padding:1px 4px;border-radius:3px}
+  .flag{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);background:var(--accent-soft);
+    color:var(--accent-ink);border-radius:20px;padding:4px 12px;font-size:12.5px;font-weight:550}
+  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-strong);background:#EEF2F4;
+    color:var(--muted);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:550}
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+  .chip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
+  .chip.on .dot{background:var(--accent)}
+
+  /* calendar */
+  .cal{margin-top:16px}
+  .cal-head,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .cal-head div{font-size:12px;font-weight:600;color:var(--muted);text-align:center;padding-bottom:6px}
+  .day{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);min-height:78px;
+    padding:7px 8px;text-align:left;display:flex;flex-direction:column;gap:4px}
+  .day.blank{border:0;background:transparent;pointer-events:none}
+  .day.we{background:var(--weekend)}
+  .day .n{font-variant-numeric:tabular-nums;font-weight:600;font-size:14px}
+  .day .t{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .day.on{background:var(--accent-soft);border-color:var(--accent)}
+  .day.on .t{color:var(--accent-ink);font-weight:600;cursor:text}
+  .day .h{font-size:11px;color:var(--accent-ink);opacity:.75;margin-top:auto}
+  .day:hover{border-color:var(--accent)}
+  .day.today .n::after{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;
+    background:var(--accent);margin-left:5px;vertical-align:middle}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-top:14px;
+    padding-top:14px;border-top:1px dashed var(--line)}
+  .hint{font-size:12.5px;color:var(--muted)}
+  .status{font-size:13px;font-weight:550;min-height:20px}
+  .status.ok{color:var(--ok)} .status.err{color:var(--danger)} .status.busy{color:var(--muted)}
+
+  /* table */
+  .tablebox{overflow:auto;border:1px solid var(--line);border-radius:8px;margin-top:12px;max-height:70vh}
+  table{border-collapse:separate;border-spacing:0;font-size:13px;width:max-content;min-width:100%}
+  th,td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:6px 8px;white-space:nowrap;background:var(--surface)}
+  thead th{position:sticky;top:0;z-index:3;background:#EEF2F4;font-weight:600;font-size:12px;color:var(--ink)}
+  th.name,td.name{position:sticky;left:0;z-index:2;min-width:180px;text-align:left;background:var(--surface)}
+  thead th.name{z-index:4;background:#EEF2F4}
+  td.cell{text-align:center;font-variant-numeric:tabular-nums;color:var(--accent-ink);background:var(--accent-soft);
+    min-width:92px;font-size:12.5px;font-weight:550}
+  td.off{text-align:center;color:#C3CCD2}
+  th.we,td.we.off{background:var(--weekend)}
+  td.tot{text-align:right;font-weight:650;font-variant-numeric:tabular-nums}
+  tfoot td{position:sticky;bottom:0;background:#EEF2F4;font-weight:600;text-align:center;font-variant-numeric:tabular-nums}
+  tfoot td.name{background:#EEF2F4;text-align:left}
+  .stats{display:flex;flex-wrap:wrap;gap:26px;margin-top:6px}
+  .stat b{display:block;font-size:24px;font-weight:650;font-variant-numeric:tabular-nums;line-height:1.2}
+  .stat span{font-size:12.5px;color:var(--muted)}
+  .emp-list{margin-top:16px;display:grid;gap:8px}
+  .emp{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+    border:1px solid var(--line);border-radius:var(--r);padding:9px 12px}
+  .emp .meta{font-size:12.5px;color:var(--muted)}
+  .empty{color:var(--muted);font-size:14px;padding:22px 0;text-align:center}
+  .daylist{margin-top:6px;font-size:12.5px;color:var(--ink);line-height:1.7}
+  .daylist span{display:inline-block;border:1px solid var(--line);border-radius:4px;padding:1px 7px;margin:0 6px 4px 0;
+    font-variant-numeric:tabular-nums}
+
+  /* modal */
+  .mask{position:fixed;inset:0;background:rgba(21,32,41,.42);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+  .mask.show{display:flex}
+  .modal{background:var(--surface);border-radius:10px;padding:18px;width:340px;max-width:100%;
+    box-shadow:0 18px 40px rgba(21,32,41,.25)}
+  .modal h3{margin:0 0 4px;font-size:16px}
+  .modal .row{margin-top:14px}
+  textarea{font:inherit;width:100%;border:1px solid var(--line-strong);border-radius:var(--r);padding:8px 10px;resize:vertical}
+  .note-view{white-space:pre-wrap;font-size:13px;color:var(--muted)}
+  .code{font:12.5px/1.55 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;word-break:break-all}
+  pre.code{background:#F2F5F6;border:1px solid var(--line);border-radius:var(--r);padding:12px;overflow:auto;max-height:340px;margin:8px 0 0}
+  details{border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;margin-top:10px}
+  details summary{cursor:pointer;font-weight:550;font-size:13.5px}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+  .opt{border:1px solid var(--line-strong);border-radius:8px;padding:12px;display:block;cursor:pointer}
+  .opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+  .opt b{display:block;font-size:14px;margin-bottom:3px}
+  .opt span{font-size:12.5px;color:var(--muted);font-weight:400;display:block}
+  .opt input{margin-right:6px}
+  ol.steps{margin:8px 0 0;padding-left:20px;font-size:13.5px;line-height:1.75}
+  ol.steps code{background:#F2F5F6;padding:1px 5px;border-radius:3px;font-size:12.5px}
+  @media (max-width:640px){
+    .day{min-height:64px;padding:5px 6px}
+    .day .h{display:none}
+    .day .t{font-size:11px}
+    input[type=time]{width:100%}
+  }
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <h1 id="appTitle">Đăng ký lịch làm việc theo tháng</h1>
+      <p class="sub">Nhân viên chọn ngày làm và khung giờ. Quản lý xem bảng tổng hợp.</p>
+    </div>
+    <div class="row">
+      <label class="f">Tháng
+        <input type="month" id="month">
+      </label>
+      <div class="tabs" role="tablist">
+        <button id="tabEmp" role="tab" aria-selected="true">Nhân viên</button>
+        <button id="tabAdm" role="tab" aria-selected="false">Quản lý</button>
+        <button id="tabCfg" role="tab" aria-selected="false" hidden>Cài đặt</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modeBar" style="margin-bottom:14px"></div>
+  <div class="banner" id="cfgWarn" hidden></div>
+
+  <!-- ================= NHÂN VIÊN ================= -->
+  <section id="viewEmp">
+    <div class="panel">
+      <div class="row">
+        <label class="f" style="flex:2 1 260px">Họ và tên
+          <input id="empName" placeholder="Ví dụ: Nguyễn Văn A" autocomplete="name">
+        </label>
+        <label class="f" style="flex:1 1 160px">Bộ phận / mã NV <span style="font-weight:400">(nếu trùng tên)</span>
+          <input id="empDept" placeholder="Ví dụ: Kho 2" autocomplete="off">
+        </label>
+        <button class="btn" id="btnLoad">Tải lịch đã gửi</button>
+      </div>
+      <p class="hint" style="margin:10px 0 0">Tên (kèm bộ phận) là mã nhận diện của bạn. Nhập đúng như lần trước để lấy lịch cũ về và cập nhật.</p>
+      <div style="margin-top:12px" id="revBox" hidden><span class="flag" id="revFlag"></span></div>
+    </div>
+
+    <div class="panel">
+      <h2>Chọn ngày làm việc</h2>
+      <div class="row">
+        <label class="f">Giờ bắt đầu mặc định <input type="time" id="defStart" value="08:00" step="900"></label>
+        <label class="f">Giờ kết thúc mặc định <input type="time" id="defEnd" value="17:00" step="900"></label>
+        <button class="btn sm" id="btnApplyAll">Áp giờ mặc định cho mọi ngày đã chọn</button>
+      </div>
+
+      <div class="cal">
+        <div class="cal-head"><div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div><div>CN</div></div>
+        <div class="cal-grid" id="grid"></div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn sm ghost" data-bulk="weekdays">Chọn T2–T6</button>
+        <button class="btn sm ghost" data-bulk="all">Chọn cả tháng</button>
+        <button class="btn sm ghost" data-bulk="none">Bỏ chọn tất cả</button>
+        <span class="hint">Bấm vào ô ngày để chọn/bỏ. Bấm vào dòng giờ trong ô để sửa giờ riêng cho ngày đó.</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <label class="f" style="width:100%">Ghi chú gửi quản lý (tuỳ chọn)
+        <textarea id="empNote" rows="2" placeholder="Ví dụ: ngày 12 và 13 chỉ làm buổi sáng, ngày 20 xin về sớm."></textarea>
+      </label>
+      <div class="row" style="margin-top:14px;justify-content:space-between">
+        <div>
+          <button class="btn primary" id="btnSave">Gửi lịch làm việc</button>
+          <button class="btn" id="btnCode">Gửi bằng mã (không cần mạng)</button>
+          <span class="status" id="empStatus" style="margin-left:12px"></span>
+        </div>
+        <div class="hint" id="empSum"></div>
+      </div>
+      <p class="hint" id="draftNote" style="margin:12px 0 0"></p>
+    </div>
+  </section>
+
+  <!-- ================= QUẢN LÝ ================= -->
+  <section id="viewAdm" hidden>
+    <div class="panel" id="pinBox">
+      <h2>Khu vực quản lý</h2>
+      <div class="row">
+        <label class="f">Mã PIN <input type="password" id="pin" style="width:130px" autocomplete="off"></label>
+        <button class="btn primary" id="btnPin">Mở bảng tổng hợp</button>
+        <span class="status" id="pinStatus"></span>
+      </div>
+      <p class="hint" style="margin:10px 0 0">Lần đầu dùng PIN <b>1234</b>, hệ thống sẽ yêu cầu đổi ngay sau khi đăng nhập.</p>
+    </div>
+
+    <div class="panel" id="pinChangeBox" hidden>
+      <h2 id="pcTitle">Đổi mã PIN</h2>
+      <p class="hint" id="pcSub" style="margin:0 0 12px"></p>
+      <div class="row">
+        <label class="f">PIN mới <input type="password" id="pcNew" style="width:130px" autocomplete="new-password"></label>
+        <label class="f">Nhập lại PIN mới <input type="password" id="pcNew2" style="width:130px" autocomplete="new-password"></label>
+        <button class="btn primary" id="btnPcSave">Lưu PIN mới</button>
+        <button class="btn" id="btnPcCancel">Huỷ</button>
+        <span class="status" id="pcStatus"></span>
+      </div>
+      <p class="hint" style="margin:10px 0 0">PIN dài 4–8 ký tự và không được để là 1234.</p>
+    </div>
+
+    <div id="admBody" hidden>
+      <div class="panel">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <h2 style="margin:0">Tổng hợp tháng <span id="admMonth"></span></h2>
+            <div class="stats" id="stats"></div>
+          </div>
+          <div class="row">
+            <button class="btn sm" id="btnRefresh">Cập nhật dữ liệu</button>
+            <button class="btn sm" id="btnImport">Nhập mã nhân viên gửi</button>
+            <button class="btn sm" id="btnCsv">Xuất CSV</button>
+            <button class="btn sm" id="btnSheet" hidden>Mở Google Sheet</button>
+            <button class="btn sm" id="btnPinChange">Đổi PIN</button>
+            <button class="btn sm" id="btnCfgOpen">Cài đặt kết nối</button>
+          </div>
+        </div>
+        <div class="tablebox" id="tableBox"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Danh sách đăng ký</h2>
+        <div class="emp-list" id="empList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CÀI ĐẶT ================= -->
+  <section id="viewCfg" hidden>
+    <div class="panel">
+      <h2>Dữ liệu được lưu ở đâu</h2>
+      <p class="hint" style="margin:0 0 12px">Khu vực này nhân viên không nhìn thấy — chỉ mở được sau khi nhập đúng mã PIN quản lý.</p>
+      <div class="banner" id="bakedNote" hidden>
+        <b>File đang nhúng sẵn cấu hình.</b> Dòng <code>BAKED_CFG</code> trong file đang quyết định nơi lưu dữ liệu,
+        nên các lựa chọn dưới đây không có tác dụng. Muốn đổi thì sửa thẳng dòng đó trong file.
+      </div>
+      <div class="grid2">
+        <label class="opt" data-be="supabase">
+          <b><input type="radio" name="be" value="supabase">Supabase <span style="font-weight:400;color:var(--muted)">(khuyên dùng)</span></b>
+          <span>Cơ sở dữ liệu thật, miễn phí, không dính lỗi CORS như Google Apps Script. Cài một lần khoảng 5 phút.</span>
+        </label>
+        <label class="opt" data-be="gas">
+          <b><input type="radio" name="be" value="gas">Google Sheet (Apps Script)</b>
+          <span>Vẫn dùng Sheet cũ. Bản này gọi bằng JSONP nên không còn lỗi <i>Failed to fetch</i>. Cần dán lại file Code.gs mới và deploy lại.</span>
+        </label>
+        <label class="opt" data-be="local">
+          <b><input type="radio" name="be" value="local">Chỉ máy này</b>
+          <span>Không cần máy chủ. Nhân viên bấm <b>Gửi bằng mã</b> rồi gửi chuỗi mã qua Zalo/email, quản lý dán vào để tổng hợp.</span>
+        </label>
+      </div>
+
+      <div id="cfgSupabase" hidden>
+        <h3>Thông số Supabase</h3>
+        <div class="row">
+          <label class="f" style="flex:1 1 320px">Project URL
+            <input id="sbUrl" placeholder="https://xxxxxxxx.supabase.co" autocomplete="off">
+          </label>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <label class="f" style="flex:1 1 100%">Anon public key
+            <input id="sbKey" placeholder="eyJhbGciOi..." autocomplete="off">
+          </label>
+        </div>
+        <details>
+          <summary>Các bước cài Supabase (bấm để mở)</summary>
+          <ol class="steps">
+            <li>Vào <code>supabase.com</code> → đăng ký miễn phí → <b>New project</b>. Đặt mật khẩu database và chọn region Singapore.</li>
+            <li>Mở <b>SQL Editor</b> → <b>New query</b> → dán toàn bộ đoạn SQL bên dưới → bấm <b>Run</b>.</li>
+            <li>Vào <b>Project Settings → API</b>, chép <b>Project URL</b> và <b>anon public</b> key vào hai ô ở trên.</li>
+            <li>Bấm <b>Lưu cài đặt</b> rồi <b>Kiểm tra kết nối</b>.</li>
+          </ol>
+          <div class="row" style="margin-top:10px"><button class="btn sm" id="btnCopySql">Chép đoạn SQL</button></div>
+          <pre class="code" id="sqlBox"></pre>
+        </details>
+      </div>
+
+      <div id="cfgGas" hidden>
+        <h3>Thông số Google Apps Script</h3>
+        <div class="row">
+          <label class="f" style="flex:1 1 420px">Link Web app (đuôi <code>/exec</code>)
+            <input id="gasUrl" placeholder="https://script.google.com/macros/s/AKfyc.../exec" autocomplete="off">
+          </label>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <label class="f" style="flex:1 1 420px">Link Google Sheet (tuỳ chọn, cho nút "Mở Google Sheet")
+            <input id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/..." autocomplete="off">
+          </label>
+        </div>
+        <details>
+          <summary>Vì sao trước đây báo "Failed to fetch" và cách sửa (bấm để mở)</summary>
+          <ol class="steps">
+            <li>Mở Google Sheet → <b>Tiện ích mở rộng → Apps Script</b>. Xoá hết nội dung cũ, dán toàn bộ file <code>Code.gs</code> mới đi kèm bản này (đã thêm hàm <code>doGet</code> hỗ trợ JSONP).</li>
+            <li><b>Triển khai → Tạo bản triển khai mới → Ứng dụng web</b>. Đặt <b>Thực thi với tư cách: Tôi</b> và <b>Người có quyền truy cập: Bất kỳ ai</b>. Đây là chỗ hay sai nhất — nếu để "Chỉ mình tôi", trình duyệt bị đá sang trang đăng nhập Google và báo <i>Failed to fetch</i>.</li>
+            <li>Mỗi lần sửa code phải <b>Tạo bản triển khai mới</b> (hoặc Quản lý bản triển khai → sửa → Phiên bản: Mới). Bấm Lưu thôi thì link <code>/exec</code> vẫn chạy code cũ.</li>
+            <li>Chép link <code>/exec</code> vào ô trên, bấm <b>Lưu cài đặt</b> rồi <b>Kiểm tra kết nối</b>.</li>
+          </ol>
+        </details>
+      </div>
+
+      <div class="row" style="margin-top:16px">
+        <button class="btn primary" id="btnCfgSave">Lưu cài đặt</button>
+        <button class="btn" id="btnCfgTest">Kiểm tra kết nối</button>
+        <span class="status" id="cfgStatus"></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Gửi cho nhân viên điền</h2>
+      <p class="hint" style="margin:0 0 12px">Cách gọn nhất: đưa file này lên <b>GitHub Pages</b> (miễn phí, có link https), rồi gửi link kèm cấu hình cho nhân viên.</p>
+      <div class="row">
+        <button class="btn primary" id="btnShare">Tạo link cho nhân viên</button>
+        <button class="btn" id="btnBake">Nhúng cài đặt vào file</button>
+        <button class="btn" id="btnCfgCode">Chép mã cài đặt</button>
+      </div>
+      <p class="hint" id="shareHint" style="margin:12px 0 0"></p>
+      <details>
+        <summary>Cách đưa lên GitHub Pages trong 5 phút (bấm để mở)</summary>
+        <ol class="steps">
+          <li>Vào <code>github.com</code> → đăng ký/đăng nhập → <b>New repository</b>. Đặt tên ví dụ <code>lich-lam-viec</code>, chọn <b>Public</b>, bấm <b>Create</b>.</li>
+          <li>Trong repo vừa tạo bấm <b>Add file → Upload files</b>, kéo thả file <code>index.html</code> này vào, bấm <b>Commit changes</b>.</li>
+          <li>Vào <b>Settings → Pages</b>. Mục <i>Source</i> chọn <b>Deploy from a branch</b>, branch <b>main</b>, thư mục <b>/ (root)</b>, bấm <b>Save</b>.</li>
+          <li>Đợi 1–2 phút, GitHub hiện link dạng <code>https://&lt;tên-tài-khoản&gt;.github.io/lich-lam-viec/</code>.</li>
+          <li>Mở link đó, vào tab <b>Cài đặt</b>, điền lại thông số, bấm <b>Tạo link cho nhân viên</b> và gửi link đó cho mọi người. Link đã kèm sẵn cấu hình, nhân viên chỉ việc mở và điền.</li>
+        </ol>
+        <p class="hint" style="margin:10px 0 0">Cách khác nếu không thích GitHub: kéo thả file vào <code>app.netlify.com/drop</code> — có link ngay, không cần tài khoản. Hoặc gửi thẳng file <code>index.html</code> qua Zalo/email và dùng chế độ <b>Chỉ máy này</b> + <b>Gửi bằng mã</b>.</p>
+      </details>
+    </div>
+  </section>
+</div>
+
+<!-- modal: sửa giờ 1 ngày -->
+<div class="mask" id="mask">
+  <div class="modal">
+    <h3 id="mdTitle">Sửa giờ làm</h3>
+    <p class="hint" id="mdSub" style="margin:0"></p>
+    <div class="row">
+      <label class="f">Từ <input type="time" id="mdStart" step="900"></label>
+      <label class="f">Đến <input type="time" id="mdEnd" step="900"></label>
+    </div>
+    <div class="row" style="justify-content:space-between">
+      <button class="btn danger sm" id="mdRemove">Bỏ ngày này</button>
+      <div>
+        <button class="btn sm" id="mdCancel">Huỷ</button>
+        <button class="btn primary sm" id="mdOk">Lưu giờ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal: hộp văn bản dùng chung (CSV / mã lịch / link) -->
+<div class="mask" id="txtMask">
+  <div class="modal" style="width:600px">
+    <h3 id="txtTitle">Nội dung</h3>
+    <p class="hint" id="txtSub" style="margin:0 0 10px"></p>
+    <textarea id="txtOut" rows="10" class="code"></textarea>
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn sm" id="txtClose">Đóng</button>
+      <button class="btn sm" id="txtAction" hidden></button>
+      <button class="btn primary sm" id="txtCopy">Sao chép</button>
+    </div>
+  </div>
+</div>
+
+<script type="text/plain" id="sqlSrc">
+-- ===== Bảng dữ liệu =====
+create table if not exists public.schedules (
+  month      text        not null,
+  emp_id     text        not null,
+  name       text        not null,
+  dept       text        not null default '',
+  days       jsonb       not null default '{}'::jsonb,
+  note       text        not null default '',
+  rev        integer     not null default 1,
+  updated_at timestamptz not null default now(),
+  primary key (month, emp_id)
+);
+alter table public.schedules enable row level security;
+
+create table if not exists public.app_settings (k text primary key, v text not null);
+alter table public.app_settings enable row level security;
+insert into public.app_settings(k,v) values ('pin','1234') on conflict (k) do nothing;
+
+-- Không tạo policy nào => không ai đọc thẳng bảng được.
+-- Mọi thao tác đi qua các hàm security definer bên dưới.
+revoke all on public.schedules    from anon, authenticated;
+revoke all on public.app_settings from anon, authenticated;
+
+-- ===== Nhân viên: lấy lịch của chính mình =====
+create or replace function public.sch_get(p_month text, p_id text)
+returns jsonb language sql security definer set search_path = public as $fn$
+  select coalesce(
+    (select jsonb_build_object('ok',true,'found',true,'name',s.name,'dept',s.dept,
+              'id',s.emp_id,'month',s.month,'days',s.days,'note',s.note,
+              'rev',s.rev,'updated',s.updated_at)
+       from public.schedules s where s.month = p_month and s.emp_id = p_id),
+    jsonb_build_object('ok',true,'found',false));
+$fn$;
+
+-- ===== Nhân viên: gửi / cập nhật lịch =====
+create or replace function public.sch_submit(p_month text, p_id text, p_name text,
+                                             p_dept text, p_days jsonb, p_note text)
+returns jsonb language plpgsql security definer set search_path = public as $fn$
+declare v_rev int; v_up timestamptz;
+begin
+  if coalesce(btrim(p_name),'') = '' or coalesce(btrim(p_id),'') = '' then
+    return jsonb_build_object('ok',false,'error','Thiếu họ tên.');
+  end if;
+  if p_month !~ '^[0-9]{4}-[0-9]{2}$' then
+    return jsonb_build_object('ok',false,'error','Tháng không hợp lệ.');
+  end if;
+  if coalesce(jsonb_typeof(p_days),'') <> 'object' or p_days = '{}'::jsonb then
+    return jsonb_build_object('ok',false,'error','Chưa chọn ngày làm việc nào.');
+  end if;
+  insert into public.schedules(month, emp_id, name, dept, days, note, rev, updated_at)
+  values (p_month, p_id, btrim(p_name), coalesce(p_dept,''), p_days, coalesce(p_note,''), 1, now())
+  on conflict (month, emp_id) do update
+    set name = excluded.name, dept = excluded.dept, days = excluded.days,
+        note = excluded.note, rev = schedules.rev + 1, updated_at = now()
+  returning rev, updated_at into v_rev, v_up;
+  return jsonb_build_object('ok',true,'found',true,'rev',v_rev,'updated',v_up,
+                            'name',btrim(p_name),'id',p_id);
+end $fn$;
+
+-- ===== Quản lý =====
+create or replace function public.sch_pin_ok(p_pin text)
+returns boolean language sql security definer set search_path = public as $fn$
+  select coalesce((select v from public.app_settings where k = 'pin'), '1234') = coalesce(p_pin,'');
+$fn$;
+
+create or replace function public.sch_login(p_pin text)
+returns jsonb language plpgsql security definer set search_path = public as $fn$
+declare cur text;
+begin
+  select coalesce(v,'1234') into cur from public.app_settings where k = 'pin';
+  cur := coalesce(cur,'1234');
+  if cur is distinct from coalesce(p_pin,'') then
+    perform pg_sleep(0.4);
+    return jsonb_build_object('ok',false,'error','PIN không đúng.');
+  end if;
+  return jsonb_build_object('ok',true,'mustChange', cur = '1234');
+end $fn$;
+
+create or replace function public.sch_change_pin(p_pin text, p_new text)
+returns jsonb language plpgsql security definer set search_path = public as $fn$
+begin
+  if not public.sch_pin_ok(p_pin) then
+    return jsonb_build_object('ok',false,'error','PIN không đúng.');
+  end if;
+  if length(coalesce(p_new,'')) < 4 or length(p_new) > 8 then
+    return jsonb_build_object('ok',false,'error','PIN phải dài 4-8 ký tự.');
+  end if;
+  if p_new = '1234' then
+    return jsonb_build_object('ok',false,'error','Không dùng lại PIN mặc định.');
+  end if;
+  insert into public.app_settings(k,v) values ('pin', p_new)
+    on conflict (k) do update set v = excluded.v;
+  return jsonb_build_object('ok',true);
+end $fn$;
+
+create or replace function public.sch_list(p_pin text, p_month text)
+returns jsonb language plpgsql security definer set search_path = public as $fn$
+declare rows jsonb;
+begin
+  if not public.sch_pin_ok(p_pin) then
+    return jsonb_build_object('ok',false,'error','PIN không đúng.');
+  end if;
+  select coalesce(jsonb_agg(jsonb_build_object('name',s.name,'dept',s.dept,'id',s.emp_id,
+           'month',s.month,'days',s.days,'note',s.note,'rev',s.rev,'updated',s.updated_at)
+           order by s.name), '[]'::jsonb)
+    into rows from public.schedules s where s.month = p_month;
+  return jsonb_build_object('ok',true,'rows',rows);
+end $fn$;
+
+create or replace function public.sch_remove(p_pin text, p_month text, p_id text)
+returns jsonb language plpgsql security definer set search_path = public as $fn$
+begin
+  if not public.sch_pin_ok(p_pin) then
+    return jsonb_build_object('ok',false,'error','PIN không đúng.');
+  end if;
+  delete from public.schedules where month = p_month and emp_id = p_id;
+  return jsonb_build_object('ok',true);
+end $fn$;
+
+-- ===== Cấp quyền gọi hàm =====
+revoke execute on function public.sch_pin_ok(text) from anon, authenticated, public;
+grant execute on function public.sch_get(text,text)                        to anon, authenticated;
+grant execute on function public.sch_submit(text,text,text,text,jsonb,text) to anon, authenticated;
+grant execute on function public.sch_login(text)                           to anon, authenticated;
+grant execute on function public.sch_change_pin(text,text)                 to anon, authenticated;
+grant execute on function public.sch_list(text,text)                       to anon, authenticated;
+grant execute on function public.sch_remove(text,text,text)                to anon, authenticated;
+</script>
+
+<script>
+/* ============================================================
+   Đăng ký lịch làm việc — bản 5
+   Ba nơi lưu dữ liệu: Supabase / Google Apps Script (JSONP) / máy này.
+   Không cần sửa code: mọi thông số nằm ở tab "Cài đặt".
+   ============================================================ */
+
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const WD = ['T2','T3','T4','T5','T6','T7','CN'];
+
+/* ---------- tiện ích chung ---------- */
+const pad = n => String(n).padStart(2,'0');
+const ym  = d => d.getFullYear()+'-'+pad(d.getMonth()+1);
+const key = (m,d) => m+'-'+pad(d);
+const parseDate = k => { const p = String(k).split('-').map(Number); return new Date(p[0], p[1]-1, p[2]); };
+const wdOf = k => WD[(parseDate(k).getDay()+6)%7];
+const isWeekend = (m,d) => { const w = parseDate(key(m,d)).getDay(); return w===0 || w===6; };
+const toMin = t => { const p = String(t).split(':').map(Number); return p[0]*60 + (p[1]||0); };
+const hours = (s,e) => { let d = toMin(e)-toMin(s); if (d<=0) d += 1440; return d/60; };
+const fmt = n => (Math.round(n*100)/100).toString().replace('.',',');
+const hm  = t => { const p = String(t).split(':'); return Number(p[0])+':'+(p[1]||'00'); };
+const span = r => hm(r.start)+' - '+hm(r.end);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const stamp = t => { if (!t) return ''; const d = new Date(t); return isNaN(d) ? String(t) : d.toLocaleString('vi-VN'); };
+const slug = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\u0111/g,'d').replace(/\u0110/g,'D')
+  .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
+const monthMeta = m => {
+  const p = m.split('-').map(Number);
+  return { y:p[0], mo:p[1], n:new Date(p[0], p[1], 0).getDate(), offset:(new Date(p[0], p[1]-1, 1).getDay()+6)%7 };
+};
+function say(sel, msg, cls){ const n = $(sel); if(!n) return; n.textContent = msg; n.className = 'status '+(cls||''); }
+
+/* base64url có dấu tiếng Việt */
+function b64e(str){
+  const b = new TextEncoder().encode(str);
+  let s = ''; for (let i=0;i<b.length;i++) s += String.fromCharCode(b[i]);
+  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function b64d(str){
+  const s = String(str).replace(/-/g,'+').replace(/_/g,'/');
+  const bin = atob(s), a = new Uint8Array(bin.length);
+  for (let i=0;i<bin.length;i++) a[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(a);
+}
+
+/* nén danh sách ngày thành chuỗi ngắn: "2:0800-1700,3,5:0900-1800" */
+function packDays(days){
+  const ks = Object.keys(days).sort(); const out = []; let last = '';
+  for (const k of ks){
+    const r = days[k];
+    const t = String(r.start).replace(':','')+'-'+String(r.end).replace(':','');
+    const d = String(Number(k.slice(-2)));
+    out.push(t===last ? d : d+':'+t);
+    last = t;
+  }
+  return out.join(',');
+}
+function unpackDays(str, month){
+  const days = {}; if (!str) return days; let last = '';
+  for (const part of String(str).split(',')){
+    if (!part) continue;
+    const i = part.indexOf(':');
+    const d = i<0 ? part : part.slice(0,i);
+    const t = i<0 ? last : part.slice(i+1);
+    if (!t || !/^\d+$/.test(d)) continue;
+    const seg = t.split('-');
+    if (seg.length !== 2) continue;
+    days[key(month, Number(d))] = { start: seg[0].slice(0,2)+':'+seg[0].slice(2),
+                                    end:   seg[1].slice(0,2)+':'+seg[1].slice(2) };
+    last = t;
+  }
+  return days;
+}
+
+/* ---------- cấu hình ---------- */
+const CFG_KEY = 'wsched:cfg';
+const DEF_CFG = { backend:'local', sbUrl:'', sbKey:'', gasUrl:'', sheetUrl:'' };
+
+/* ============================================================
+   CẤU HÌNH NHÚNG SẴN TRONG FILE
+   Để trống ({}) thì app dùng cấu hình lưu trên trình duyệt.
+   Điền vào đây thì mọi người mở file/link đều chạy đúng ngay,
+   không cần tab Cài đặt — dùng khi phát file cho nhân viên.
+   Lấy sẵn dòng để dán: Quản lý -> Cài đặt kết nối -> "Nhúng
+   cài đặt vào file", rồi chép đè lên dòng BAKED_CFG bên dưới.
+   ============================================================ */
+const BAKED_CFG = {"backend":"gas","gasUrl":"https://script.google.com/macros/s/AKfycbzd79qncZOWY311QInu6MrFvaJbzse99iYK8y0ARk6ef4gsoyGfVvM3Y3pSIeGCn64/exec"};
+
+let CFG = Object.assign({}, DEF_CFG);
+try { const s = localStorage.getItem(CFG_KEY); if (s) Object.assign(CFG, JSON.parse(s)); } catch(e){}
+/* Cấu hình nhúng trong file được ưu tiên cao nhất, để một trình duyệt
+   đã lưu cấu hình cũ không làm hỏng bản phát cho nhân viên. */
+const BAKED_ON = !!(BAKED_CFG && BAKED_CFG.backend);
+if (BAKED_ON) Object.assign(CFG, BAKED_CFG);
+/* Bật lên sau khi quản lý nhập đúng PIN. Khai báo sớm vì các hàm báo lỗi
+   dùng nó để chọn cách diễn đạt cho nhân viên hay cho quản lý. */
+let cfgUnlocked = false;
+function saveCfg(){ try { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); } catch(e){} }
+
+/* Link gửi nhân viên mang cấu hình trong phần #cfg=... của địa chỉ. */
+function takeCfgFromHash(){
+  const m = (location.hash||'').match(/cfg=([A-Za-z0-9\-_]+)/);
+  if (!m) return false;
+  const clean = () => history.replaceState(null, '', location.pathname + location.search);
+  if (BAKED_ON){ clean(); return false; }   // file đã nhúng cấu hình thì bỏ qua link
+  try{
+    Object.assign(CFG, JSON.parse(b64d(m[1])));
+    saveCfg();
+    clean();
+    return true;
+  }catch(e){ return false; }
+}
+takeCfgFromHash();
+/* Nếu dán link cấu hình vào tab đang mở thì trang không tải lại — bắt sự kiện này. */
+window.addEventListener('hashchange', () => {
+  if (takeCfgFromHash()) location.reload();
+});
+
+/* ---------- localStorage an toàn ---------- */
+const LS = {
+  g: k => { try { return localStorage.getItem(k); } catch(e){ return null; } },
+  s: (k,v) => { try { localStorage.setItem(k,v); } catch(e){} },
+  d: k => { try { localStorage.removeItem(k); } catch(e){} }
+};
+
+/* ---------- lỗi mạng nói tiếng người ---------- */
+function netHint(what){
+  let m = 'Không kết nối được ' + what + '. ';
+  if (location.protocol === 'file:')
+    m += 'Bạn đang mở file trực tiếp từ ổ đĩa (file://) — một số trình duyệt và phần mở rộng chặn kết nối kiểu này. Thử đưa file lên GitHub Pages rồi mở bằng link https. ';
+  m += 'Kiểm tra lại đường truyền mạng và trình chặn quảng cáo. ';
+  m += cfgUnlocked
+    ? 'Nếu vẫn không được, mở Cài đặt kết nối xem địa chỉ đã đúng chưa.'
+    : 'Lịch bạn chọn đã được lưu tạm trên máy, mở lại trang vẫn còn. Báo quản lý kiểm tra giúp.';
+  return m;
+}
+
+/* Riêng Google Apps Script còn một kiểu hỏng nữa: gọi được tới nơi nhưng bản
+   triển khai đang chạy code cũ (chưa có doGet), nên không có gì trả về đúng cách. */
+function gasHint(){
+  let m = 'Không gọi được Google Apps Script. ';
+  m += cfgUnlocked
+    ? 'Hai nguyên nhân hay gặp: (1) bản triển khai Web app vẫn đang chạy Code.gs cũ — cần dán Code.gs mới rồi Quản lý bản triển khai, sửa, chọn Phiên bản Mới; (2) mục "Người có quyền truy cập" chưa để "Bất kỳ ai".'
+    : 'Lịch bạn chọn đã được lưu tạm trên máy, mở lại trang vẫn còn. Báo quản lý kiểm tra lại kết nối giúp.';
+  return m;
+}
+
+/* ---------- adapter: chỉ máy này ---------- */
+const RK = (m,id) => 'wsched:rec:'+m+':'+id;
+const PINK = 'wsched:pin';
+const curPin = () => LS.g(PINK) || '1234';
+
+const beLocal = {
+  label: 'Chỉ lưu trên máy này',
+  async ping(){ return {ok:true}; },
+  async get(p){
+    const v = LS.g(RK(p.month, p.id));
+    return v ? Object.assign({ok:true}, JSON.parse(v)) : {ok:true, found:false};
+  },
+  async submit(p){
+    const old = LS.g(RK(p.month, p.id));
+    const rev = old ? (JSON.parse(old).rev||1)+1 : 1;
+    const rec = { found:true, rev, updated:new Date().toISOString(), name:p.name, dept:p.dept||'',
+                  id:p.id, month:p.month, days:p.days, note:p.note||'' };
+    LS.s(RK(p.month,p.id), JSON.stringify(rec));
+    return Object.assign({ok:true}, rec);
+  },
+  async login(p){
+    if (String(p.pin) !== curPin()) throw new Error('PIN không đúng.');
+    return { ok:true, mustChange: curPin()==='1234' };
+  },
+  async changePin(p){
+    if (String(p.pin) !== curPin()) throw new Error('PIN không đúng.');
+    LS.s(PINK, String(p.newPin)); return {ok:true};
+  },
+  async list(p){
+    if (String(p.pin) !== curPin()) throw new Error('PIN không đúng.');
+    const out = [], pre = 'wsched:rec:'+p.month+':';
+    for (let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if (k && k.indexOf(pre)===0){ try{ out.push(JSON.parse(localStorage.getItem(k))); }catch(e){} }
+    }
+    return {ok:true, rows:out};
+  },
+  async remove(p){
+    if (String(p.pin) !== curPin()) throw new Error('PIN không đúng.');
+    LS.d(RK(p.month, p.id)); return {ok:true};
+  }
+};
+
+/* ---------- adapter: Supabase ---------- */
+async function sbCall(fn, body){
+  const base = String(CFG.sbUrl||'').trim().replace(/\/+$/,'');
+  if (!/^https:\/\/.+/.test(base) || !String(CFG.sbKey||'').trim())
+    throw new Error('Chưa điền Project URL và anon key của Supabase trong tab Cài đặt.');
+  let res;
+  try{
+    res = await fetch(base+'/rest/v1/rpc/'+fn, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'apikey':CFG.sbKey.trim(),
+                'Authorization':'Bearer '+CFG.sbKey.trim() },
+      body: JSON.stringify(body||{})
+    });
+  }catch(e){ throw new Error(netHint('Supabase')); }
+  const txt = await res.text();
+  let data = null;
+  try { data = txt ? JSON.parse(txt) : null; } catch(e){}
+  if (!res.ok){
+    const msg = (data && (data.message || data.hint || data.error)) || ('mã lỗi '+res.status);
+    if (res.status===404 || /could not find the function|schema cache/i.test(String(msg)))
+      throw new Error('Supabase chưa có các hàm cần thiết. Vào SQL Editor chạy đoạn SQL trong tab Cài đặt.');
+    if (res.status===401 || res.status===403)
+      throw new Error('Supabase từ chối: anon key sai hoặc chưa cấp quyền. Chạy lại đoạn SQL và chép đúng anon public key.');
+    throw new Error('Supabase báo lỗi: '+msg);
+  }
+  if (data && data.ok === false) throw new Error(data.error || 'Yêu cầu bị từ chối.');
+  return data || {ok:true};
+}
+const beSupabase = {
+  label: 'Supabase',
+  ping(){ return sbCall('sch_get', {p_month:'1970-01', p_id:'__ping__'}); },
+  get(p){ return sbCall('sch_get', {p_month:p.month, p_id:p.id}); },
+  submit(p){ return sbCall('sch_submit', {p_month:p.month, p_id:p.id, p_name:p.name,
+                                          p_dept:p.dept||'', p_days:p.days, p_note:p.note||''}); },
+  login(p){ return sbCall('sch_login', {p_pin:String(p.pin)}); },
+  changePin(p){ return sbCall('sch_change_pin', {p_pin:String(p.pin), p_new:String(p.newPin)}); },
+  list(p){ return sbCall('sch_list', {p_pin:String(p.pin), p_month:p.month}); },
+  remove(p){ return sbCall('sch_remove', {p_pin:String(p.pin), p_month:p.month, p_id:p.id}); }
+};
+
+/* ---------- adapter: Google Apps Script qua JSONP ----------
+   JSONP nạp bằng thẻ <script> nên không đụng tới CORS —
+   đây là chỗ bản cũ hay chết với "Failed to fetch".            */
+let jsonpSeq = 0;
+function jsonp(params){
+  const url = String(CFG.gasUrl||'').trim();
+  if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(url))
+    throw new Error('Link Web app chưa đúng. Phải là https://script.google.com/macros/s/.../exec');
+  return new Promise((resolve, reject) => {
+    const cb = 'wsched_cb_' + (++jsonpSeq) + '_' + Math.random().toString(36).slice(2,8);
+    const s = document.createElement('script');
+    let done = false;
+    const timer = setTimeout(() => finish(null, new Error(
+      'Google Apps Script không trả lời sau 25 giây. Thường là do bản triển khai đặt "Người có quyền truy cập" khác "Bất kỳ ai", hoặc bạn chưa Tạo bản triển khai mới sau khi sửa code.')), 25000);
+    function finish(data, err){
+      if (done) return; done = true;
+      clearTimeout(timer);
+      try { delete window[cb]; } catch(e){ window[cb] = undefined; }
+      if (s.parentNode) s.parentNode.removeChild(s);
+      if (err) reject(err);
+      else if (!data || data.ok === false) reject(new Error((data && data.error) || 'Máy chủ từ chối yêu cầu.'));
+      else resolve(data);
+    }
+    window[cb] = d => finish(d, null);
+    s.onerror = () => finish(null, new Error(gasHint()));
+    const q = new URLSearchParams(Object.assign({}, params, {callback: cb}));
+    s.src = url + '?' + q.toString();
+    document.head.appendChild(s);
+  });
+}
+const normRow = r => ({ id:r.id, name:r.name, dept:r.dept||'', month:r.month,
+                        days: typeof r.days === 'string' ? unpackDays(r.days, r.month) : (r.days||{}),
+                        note:r.note||'', rev:Number(r.rev)||1, updated:r.updated||'' });
+const beGas = {
+  label: 'Google Sheet',
+  ping(){ return jsonp({action:'ping'}); },
+  async get(p){
+    const d = await jsonp({action:'get', month:p.month, id:p.id});
+    return d.found ? Object.assign({}, d, normRow(d)) : d;
+  },
+  submit(p){ return jsonp({action:'submit', month:p.month, id:p.id, name:p.name,
+                           dept:p.dept||'', days:packDays(p.days), note:p.note||''}); },
+  login(p){ return jsonp({action:'login', pin:p.pin}); },
+  changePin(p){ return jsonp({action:'changePin', pin:p.pin, newPin:p.newPin}); },
+  async list(p){
+    const d = await jsonp({action:'list', pin:p.pin, month:p.month});
+    return { ok:true, rows:(d.rows||[]).map(normRow) };
+  },
+  remove(p){ return jsonp({action:'remove', pin:p.pin, month:p.month, id:p.id}); }
+};
+
+const BACKENDS = { local:beLocal, supabase:beSupabase, gas:beGas };
+const be = () => BACKENDS[CFG.backend] || beLocal;
+function api(action, payload){
+  const b = be();
+  if (!b[action]) return Promise.reject(new Error('Hành động không hợp lệ.'));
+  return Promise.resolve().then(() => b[action](payload||{}));
+}
+
+async function busy(btn, fn){
+  const old = btn.textContent; btn.disabled = true;
+  try { return await fn(); } finally { btn.disabled = false; btn.textContent = old; }
+}
+
+/* ---------- trạng thái ---------- */
+const today = new Date();
+const state = { month: ym(today), days:{}, editing:null, rev:0, updated:'' };
+let adminData = [];
+let adminPin  = '';
+
+const empId = () => {
+  const n = slug($('#empName').value.trim());
+  const d = slug($('#empDept').value.trim());
+  return d ? n+'--'+d : n;
+};
+
+/* ---------- bản nháp tự lưu ---------- */
+const draftKey = () => 'wsched:draft:'+state.month;
+function saveDraft(){
+  if (!Object.keys(state.days).length && !$('#empNote').value.trim()){ LS.d(draftKey()); showDraftNote(false); return; }
+  LS.s(draftKey(), JSON.stringify({
+    name:$('#empName').value, dept:$('#empDept').value, note:$('#empNote').value,
+    days:state.days, at:new Date().toISOString()
+  }));
+  showDraftNote(true);
+}
+function showDraftNote(has){
+  $('#draftNote').textContent = has
+    ? 'Đã lưu nháp trên máy lúc ' + new Date().toLocaleTimeString('vi-VN') + '. Nếu gửi không thành công, mở lại trang này vẫn còn nguyên các ngày đã chọn.'
+    : '';
+}
+function restoreDraft(){
+  const v = LS.g(draftKey()); if (!v) return false;
+  try{
+    const d = JSON.parse(v);
+    if (!d.days || !Object.keys(d.days).length) return false;
+    if (d.name && !$('#empName').value) $('#empName').value = d.name;
+    if (d.dept && !$('#empDept').value) $('#empDept').value = d.dept;
+    if (d.note && !$('#empNote').value) $('#empNote').value = d.note;
+    state.days = d.days;
+    return true;
+  }catch(e){ return false; }
+}
+
+/* ---------- tháng + tab ---------- */
+$('#month').value = state.month;
+$('#month').addEventListener('change', e => {
+  state.month = e.target.value || ym(new Date());
+  state.days = {}; state.rev = 0; state.updated = '';
+  restoreDraft();
+  renderCal(); markRev();
+  if ($('#empName').value.trim()) loadMine(true);
+  if (!$('#admBody').hidden) refreshAdmin();
+});
+
+function showTab(which){
+  const map = { emp:'#viewEmp', adm:'#viewAdm', cfg:'#viewCfg' };
+  for (const k in map) $(map[k]).hidden = (k !== which);
+  $('#tabEmp').setAttribute('aria-selected', which==='emp');
+  $('#tabAdm').setAttribute('aria-selected', which==='adm');
+  $('#tabCfg').setAttribute('aria-selected', which==='cfg');
+}
+$('#tabEmp').onclick = () => showTab('emp');
+$('#tabAdm').onclick = () => showTab('adm');
+$('#tabCfg').onclick = () => openCfg();
+
+/* Tab Cài đặt ẩn với nhân viên. Chỉ hiện sau khi quản lý nhập đúng PIN,
+   hoặc khi mở trang bằng địa chỉ kết thúc bằng #setup (dùng để cứu khi
+   chưa cấu hình gì nên chưa đăng nhập được). */
+function unlockCfg(){
+  if (cfgUnlocked) return;
+  cfgUnlocked = true;
+  $('#tabCfg').hidden = false;
+  renderModeBar();
+}
+function openCfg(){
+  if (!cfgUnlocked) return;
+  fillCfgForm(); showTab('cfg');
+}
+
+/* ---------- lịch ---------- */
+function renderCal(){
+  const meta = monthMeta(state.month);
+  const g = $('#grid'); g.innerHTML = '';
+  for (let i=0;i<meta.offset;i++){ const b = document.createElement('div'); b.className='day blank'; g.appendChild(b); }
+  const todayKey = ym(today)+'-'+pad(today.getDate());
+  for (let d=1; d<=meta.n; d++){
+    const k = key(state.month,d), rec = state.days[k];
+    const cell = document.createElement('div');
+    cell.className = 'day' + (isWeekend(state.month,d)?' we':'') + (rec?' on':'') + (k===todayKey?' today':'');
+    cell.tabIndex = 0; cell.dataset.date = k;
+    cell.innerHTML = '<span class="n">'+d+'</span>' +
+      (rec ? '<span class="t" data-edit="1" title="Bấm để sửa giờ">'+span(rec)+'</span>'+
+             '<span class="h">'+fmt(hours(rec.start,rec.end))+' giờ</span>'
+           : '<span class="t">–</span>');
+    cell.onclick = ev => { if (ev.target.dataset.edit) return openEditor(k); toggle(k); };
+    cell.onkeydown = ev => { if (ev.key===' '||ev.key==='Enter'){ ev.preventDefault(); toggle(k); } };
+    g.appendChild(cell);
+  }
+  updateSum();
+}
+function toggle(k){
+  if (state.days[k]) delete state.days[k];
+  else state.days[k] = { start:$('#defStart').value||'08:00', end:$('#defEnd').value||'17:00' };
+  renderCal(); saveDraft();
+}
+function updateSum(){
+  const ks = Object.keys(state.days);
+  const tot = ks.reduce((s,k)=>s+hours(state.days[k].start, state.days[k].end), 0);
+  $('#empSum').textContent = ks.length ? ks.length+' ngày · '+fmt(tot)+' giờ' : 'Chưa chọn ngày nào';
+}
+$$('[data-bulk]').forEach(b => b.onclick = () => {
+  const meta = monthMeta(state.month), mode = b.dataset.bulk;
+  const s = $('#defStart').value||'08:00', e = $('#defEnd').value||'17:00';
+  if (mode==='none') state.days = {};
+  else for (let d=1; d<=meta.n; d++){
+    if (mode==='weekdays' && isWeekend(state.month,d)) continue;
+    const k = key(state.month,d);
+    if (!state.days[k]) state.days[k] = {start:s, end:e};
+  }
+  renderCal(); saveDraft();
+});
+$('#btnApplyAll').onclick = () => {
+  const s = $('#defStart').value||'08:00', e = $('#defEnd').value||'17:00';
+  Object.keys(state.days).forEach(k => state.days[k] = {start:s, end:e});
+  renderCal(); saveDraft();
+};
+$('#empNote').addEventListener('input', saveDraft);
+
+/* ---------- sửa giờ một ngày ---------- */
+function openEditor(k){
+  state.editing = k;
+  const r = state.days[k];
+  $('#mdSub').textContent = 'Ngày '+Number(k.slice(-2))+' ('+wdOf(k)+')';
+  $('#mdStart').value = r.start; $('#mdEnd').value = r.end;
+  $('#mask').classList.add('show'); $('#mdStart').focus();
+}
+const closeEditor = () => { $('#mask').classList.remove('show'); state.editing = null; };
+$('#mdCancel').onclick = closeEditor;
+$('#mask').onclick = e => { if (e.target.id==='mask') closeEditor(); };
+$('#mdOk').onclick = () => {
+  const s = $('#mdStart').value, e = $('#mdEnd').value;
+  if (!s || !e) return;
+  state.days[state.editing] = {start:s, end:e};
+  closeEditor(); renderCal(); saveDraft();
+};
+$('#mdRemove').onclick = () => { delete state.days[state.editing]; closeEditor(); renderCal(); saveDraft(); };
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if ($('#mask').classList.contains('show')) closeEditor();
+  if ($('#txtMask').classList.contains('show')) $('#txtMask').classList.remove('show');
+});
+
+/* ---------- hộp văn bản dùng chung ---------- */
+function showText(title, sub, value, opt){
+  opt = opt || {};
+  $('#txtTitle').textContent = title;
+  $('#txtSub').textContent = sub || '';
+  $('#txtOut').value = value || '';
+  $('#txtOut').readOnly = !opt.editable;
+  const act = $('#txtAction');
+  act.hidden = !opt.actionLabel;
+  if (opt.actionLabel){ act.textContent = opt.actionLabel; act.onclick = () => opt.onAction($('#txtOut').value); }
+  $('#txtCopy').hidden = !!opt.hideCopy;
+  $('#txtMask').classList.add('show');
+  $('#txtOut').focus();
+  if (!opt.editable) $('#txtOut').select();
+}
+$('#txtClose').onclick = () => $('#txtMask').classList.remove('show');
+$('#txtMask').onclick = e => { if (e.target.id==='txtMask') $('#txtMask').classList.remove('show'); };
+$('#txtCopy').onclick = async () => {
+  const t = $('#txtOut'); t.select();
+  try { await navigator.clipboard.writeText(t.value); } catch(e){ try{ document.execCommand('copy'); }catch(e2){} }
+  $('#txtCopy').textContent = 'Đã sao chép';
+  setTimeout(()=>$('#txtCopy').textContent='Sao chép', 1500);
+};
+
+/* ---------- gửi / cập nhật (nhân viên) ---------- */
+function markRev(){
+  const has = state.rev > 0;
+  $('#revBox').hidden = !has;
+  if (has) $('#revFlag').textContent = 'Đã gửi lần '+state.rev+' lúc '+stamp(state.updated)+' — sửa rồi bấm Cập nhật lịch làm việc';
+  $('#btnSave').textContent = has ? 'Cập nhật lịch làm việc' : 'Gửi lịch làm việc';
+}
+
+$('#btnSave').onclick = () => busy($('#btnSave'), async () => {
+  const name = $('#empName').value.trim();
+  if (!name) return say('#empStatus','Nhập họ tên trước khi gửi.','err');
+  if (!Object.keys(state.days).length) return say('#empStatus','Chưa chọn ngày làm việc nào.','err');
+  say('#empStatus','Đang gửi…','busy');
+  try{
+    const d = await api('submit', { name, dept:$('#empDept').value.trim(), id:empId(),
+                                    month:state.month, days:state.days, note:$('#empNote').value.trim() });
+    state.rev = d.rev || 1; state.updated = d.updated || new Date().toISOString();
+    markRev();
+    LS.s('wsched:me', JSON.stringify({name, dept:$('#empDept').value.trim()}));
+    LS.d(draftKey()); showDraftNote(false);
+    say('#empStatus', (state.rev>1 ? 'Đã cập nhật lịch tháng ' : 'Đã gửi lịch tháng ')+state.month+
+        (CFG.backend==='local' ? '. Đang ở chế độ "Chỉ máy này" — bấm "Gửi bằng mã" để gửi cho quản lý.'
+                               : '. Quản lý thấy ngay trên bảng tổng hợp.'), 'ok');
+  }catch(err){
+    say('#empStatus','Không gửi được: '+err.message, 'err');
+    saveDraft();
+  }
+});
+
+$('#btnCode').onclick = () => {
+  const name = $('#empName').value.trim();
+  if (!name) return say('#empStatus','Nhập họ tên trước đã.','err');
+  if (!Object.keys(state.days).length) return say('#empStatus','Chưa chọn ngày làm việc nào.','err');
+  const code = 'LICH1.' + b64e(JSON.stringify({
+    m: state.month, n: name, p: $('#empDept').value.trim(),
+    d: packDays(state.days), o: $('#empNote').value.trim()
+  }));
+  showText('Mã lịch của bạn',
+    'Sao chép toàn bộ dòng dưới đây và gửi cho quản lý qua Zalo, email hay tin nhắn. Không cần mạng, không cần tài khoản.',
+    code);
+};
+
+async function loadMine(silent){
+  const name = $('#empName').value.trim();
+  if (!name){ if (!silent) say('#empStatus','Nhập họ tên để tải lịch.','err'); return; }
+  if (!silent) say('#empStatus','Đang tải…','busy');
+  try{
+    const d = await api('get', { month:state.month, id:empId() });
+    if (!d.found){
+      state.rev = 0; state.updated = '';
+      if (!restoreDraft()){ state.days = {}; $('#empNote').value = ''; }
+      renderCal(); markRev();
+      say('#empStatus', silent ? '' : 'Chưa có lịch nào cho tháng này. Chọn ngày rồi bấm Gửi lịch làm việc.', '');
+      return;
+    }
+    state.days = (typeof d.days === 'string') ? unpackDays(d.days, state.month) : (d.days || {});
+    state.rev = Number(d.rev) || 1;
+    state.updated = d.updated || '';
+    $('#empNote').value = d.note || '';
+    if (d.name) $('#empName').value = d.name;
+    if (d.dept) $('#empDept').value = d.dept;
+    LS.d(draftKey()); showDraftNote(false);
+    renderCal(); markRev();
+    say('#empStatus','Đã tải lịch của '+d.name+' (lần gửi '+state.rev+').','ok');
+  }catch(err){
+    if (!silent) say('#empStatus','Không tải được: '+err.message,'err');
+  }
+}
+$('#btnLoad').onclick = () => busy($('#btnLoad'), () => loadMine(false));
+function maybeAutoLoad(){
+  if (!$('#empName').value.trim()) return;
+  if (Object.keys(state.days).length &&
+      !confirm('Tải lịch đã gửi của tên này về? Các ngày đang chọn trên màn hình sẽ bị thay thế.')) return;
+  loadMine(true);
+}
+$('#empName').addEventListener('change', maybeAutoLoad);
+$('#empDept').addEventListener('change', maybeAutoLoad);
+
+/* ---------- quản lý ---------- */
+function openAdmin(){
+  $('#pinBox').hidden = true; $('#pinChangeBox').hidden = true; $('#admBody').hidden = false;
+  refreshAdmin();
+}
+function showPinChange(force){
+  $('#pinBox').hidden = true; $('#admBody').hidden = true; $('#pinChangeBox').hidden = false;
+  $('#pcTitle').textContent = force ? 'Đặt mã PIN riêng' : 'Đổi mã PIN';
+  $('#pcSub').textContent = force
+    ? 'Tài khoản đang dùng PIN mặc định. Đặt PIN mới để tiếp tục vào bảng tổng hợp.'
+    : 'Nhập PIN mới cho khu vực quản lý.';
+  $('#btnPcCancel').hidden = !!force;
+  $('#pcNew').value = ''; $('#pcNew2').value = ''; say('#pcStatus','','');
+  $('#pcNew').focus();
+}
+
+$('#btnPin').onclick = () => busy($('#btnPin'), async () => {
+  const pin = $('#pin').value.trim();
+  if (!pin) return say('#pinStatus','Nhập mã PIN.','err');
+  say('#pinStatus','Đang kiểm tra…','busy');
+  try{
+    const d = await api('login', {pin});
+    adminPin = pin; $('#pin').value = ''; say('#pinStatus','','');
+    unlockCfg();
+    if (d.mustChange) showPinChange(true); else openAdmin();
+  }catch(err){ say('#pinStatus', err.message, 'err'); }
+});
+$('#pin').addEventListener('keydown', e => { if (e.key==='Enter') $('#btnPin').click(); });
+
+$('#btnPcSave').onclick = () => busy($('#btnPcSave'), async () => {
+  const a = $('#pcNew').value.trim(), b = $('#pcNew2').value.trim();
+  if (a.length<4 || a.length>8) return say('#pcStatus','PIN phải dài 4–8 ký tự.','err');
+  if (a === '1234') return say('#pcStatus','Không dùng lại PIN mặc định.','err');
+  if (a !== b) return say('#pcStatus','Hai lần nhập chưa khớp.','err');
+  say('#pcStatus','Đang lưu…','busy');
+  try{ await api('changePin', {pin:adminPin, newPin:a}); adminPin = a; openAdmin(); }
+  catch(err){ say('#pcStatus', err.message, 'err'); }
+});
+$('#btnPcCancel').onclick = () => { $('#pinChangeBox').hidden = true; $('#admBody').hidden = false; };
+$('#btnPinChange').onclick = () => showPinChange(false);
+$('#btnCfgOpen').onclick = () => openCfg();
+$('#btnRefresh').onclick = () => busy($('#btnRefresh'), refreshAdmin);
+$('#btnSheet').onclick = () => { if (CFG.sheetUrl) window.open(CFG.sheetUrl, '_blank', 'noopener'); };
+
+$('#btnImport').onclick = () => {
+  showText('Nhập mã nhân viên gửi',
+    'Dán chuỗi mã nhân viên gửi qua Zalo/email vào đây. Có thể dán nhiều mã, mỗi mã một dòng.',
+    '', { editable:true, hideCopy:true, actionLabel:'Nhập vào bảng', onAction: importCodes });
+};
+async function importCodes(text){
+  const lines = String(text).split(/\s+/).filter(x => x.indexOf('LICH1.')===0);
+  if (!lines.length) return alert('Không tìm thấy mã nào hợp lệ. Mã phải bắt đầu bằng LICH1.');
+  let ok = 0, fail = 0, otherMonth = 0;
+  for (const line of lines){
+    try{
+      const o = JSON.parse(b64d(line.slice(6)));
+      if (!o.n || !o.m) { fail++; continue; }
+      if (o.m !== state.month) otherMonth++;
+      const id = slug(o.n) + (o.p ? '--'+slug(o.p) : '');
+      await api('submit', { month:o.m, id, name:o.n, dept:o.p||'',
+                            days: unpackDays(o.d, o.m), note:o.o||'' });
+      ok++;
+    }catch(e){ fail++; }
+  }
+  $('#txtMask').classList.remove('show');
+  alert('Đã nhập '+ok+' mã.' + (fail?(' Bỏ qua '+fail+' mã lỗi.'):'') +
+        (otherMonth?(' Có '+otherMonth+' mã thuộc tháng khác — đổi ô Tháng ở trên để xem.'):''));
+  refreshAdmin();
+}
+
+async function refreshAdmin(){
+  $('#admMonth').textContent = state.month;
+  $('#tableBox').innerHTML = '<div class="empty">Đang tải dữ liệu…</div>';
+  try{
+    const d = await api('list', {pin:adminPin, month:state.month});
+    adminData = (d.rows||[]).map(r => Object.assign({}, r,
+      { days: typeof r.days === 'string' ? unpackDays(r.days, r.month || state.month) : (r.days||{}) }))
+      .sort((a,b) => String(a.name).localeCompare(String(b.name),'vi'));
+    renderAdmin();
+  }catch(err){
+    $('#tableBox').innerHTML = '<div class="empty">Không tải được dữ liệu: '+esc(err.message)+'</div>';
+    $('#stats').innerHTML = ''; $('#empList').innerHTML = '';
+  }
+}
+
+const stat = (v,l) => '<div class="stat"><b>'+v+'</b><span>'+l+'</span></div>';
+const fullName = r => r.name + (r.dept ? ' · '+r.dept : '');
+
+function renderAdmin(){
+  const meta = monthMeta(state.month);
+  const n = meta.n;
+  if (!adminData.length){
+    $('#tableBox').innerHTML = '<div class="empty">Chưa có nhân viên nào đăng ký tháng này.</div>';
+    $('#stats').innerHTML = ''; $('#empList').innerHTML = '';
+    return;
+  }
+  let head = '<tr><th class="name">Nhân viên</th>';
+  for (let d=1; d<=n; d++) head += '<th class="'+(isWeekend(state.month,d)?'we':'')+'">'+d+
+    '<br><span style="font-weight:500;color:#67757F">'+wdOf(key(state.month,d))+'</span></th>';
+  head += '<th>Ngày</th><th>Giờ</th></tr>';
+
+  let body = '', grandH = 0, grandD = 0;
+  const perDay = Array(n+1).fill(0);
+  for (const r of adminData){
+    let cells = '', th = 0, td = 0;
+    for (let d=1; d<=n; d++){
+      const rec = (r.days||{})[key(state.month,d)];
+      if (rec){
+        th += hours(rec.start, rec.end); td++; perDay[d]++;
+        cells += '<td class="cell">'+span(rec)+'</td>';
+      } else {
+        cells += '<td class="off '+(isWeekend(state.month,d)?'we':'')+'">·</td>';
+      }
+    }
+    grandH += th; grandD += td;
+    body += '<tr><td class="name">'+esc(fullName(r))+'</td>'+cells+
+            '<td class="tot">'+td+'</td><td class="tot">'+fmt(th)+'</td></tr>';
+  }
+  let foot = '<tr><td class="name">Số người có mặt</td>';
+  for (let d=1; d<=n; d++) foot += '<td>'+(perDay[d]||'·')+'</td>';
+  foot += '<td>'+grandD+'</td><td>'+fmt(grandH)+'</td></tr>';
+
+  $('#tableBox').innerHTML = '<table><thead>'+head+'</thead><tbody>'+body+'</tbody><tfoot>'+foot+'</tfoot></table>';
+
+  const maxCount = Math.max(0, ...perDay.slice(1));
+  $('#stats').innerHTML =
+    stat(adminData.length, 'nhân viên đăng ký') +
+    stat(fmt(grandH), 'tổng giờ công') +
+    stat(fmt(grandH/adminData.length), 'giờ trung bình / người') +
+    (maxCount > 0
+      ? stat('Ngày '+perDay.indexOf(maxCount), 'đông nhất ('+maxCount+' người)')
+      : stat('–', 'chưa có ngày nào'));
+
+  $('#empList').innerHTML = adminData.map(r => {
+    const days = r.days || {};
+    const ks = Object.keys(days).sort();
+    const h = ks.reduce((s,k) => s + hours(days[k].start, days[k].end), 0);
+    const chips = ks.map(k => '<span>'+Number(k.slice(-2))+'/'+state.month.slice(5)+': '+span(days[k])+'</span>').join('');
+    return '<div class="emp"><div style="flex:1 1 420px"><b>'+esc(fullName(r))+'</b>'+
+      '<div class="meta">'+ks.length+' ngày · '+fmt(h)+' giờ · lần gửi '+(r.rev||1)+' · cập nhật '+stamp(r.updated)+'</div>'+
+      '<div class="daylist">'+chips+'</div>'+
+      (r.note ? '<div class="note-view">'+esc(r.note)+'</div>' : '')+
+      '</div><button class="btn sm danger" data-del="'+esc(r.id || slug(r.name))+'">Xoá đăng ký</button></div>';
+  }).join('');
+
+  $$('[data-del]').forEach(b => b.onclick = async () => {
+    if (!confirm('Xoá đăng ký này?')) return;
+    try{ await api('remove', {pin:adminPin, month:state.month, id:b.dataset.del}); refreshAdmin(); }
+    catch(err){ alert('Không xoá được: '+err.message); }
+  });
+}
+
+/* ---------- CSV ---------- */
+const q = s => '"'+String(s).replace(/"/g,'""')+'"';
+$('#btnCsv').onclick = () => {
+  if (!adminData.length) return alert('Chưa có dữ liệu để xuất.');
+  const n = monthMeta(state.month).n;
+  const rows = [['Nhân viên','Bộ phận','Ngày','Thứ','Bắt đầu','Kết thúc','Khung giờ','Số giờ','Ghi chú'].join(',')];
+  for (const r of adminData)
+    for (let d=1; d<=n; d++){
+      const k = key(state.month,d), rec = (r.days||{})[k];
+      if (!rec) continue;
+      rows.push([q(r.name), q(r.dept||''), k, wdOf(k), rec.start, rec.end, q(span(rec)),
+                 fmt(hours(rec.start,rec.end)), q(r.note||'')].join(','));
+    }
+  const text = rows.join('\r\n');
+  try{
+    const b = new Blob(['\ufeff'+text], {type:'text/csv;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = 'lich-lam-viec-'+state.month+'.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  }catch(e){
+    showText('Dữ liệu CSV', 'Sao chép và dán vào Excel (mã hoá UTF-8).', text);
+  }
+};
+
+/* ---------- tab Cài đặt ---------- */
+$('#sqlBox').textContent = document.getElementById('sqlSrc').textContent.trim();
+$('#btnCopySql').onclick = async () => {
+  try{ await navigator.clipboard.writeText($('#sqlBox').textContent); $('#btnCopySql').textContent = 'Đã chép'; }
+  catch(e){ showText('Đoạn SQL cho Supabase','Sao chép rồi dán vào SQL Editor.', $('#sqlBox').textContent); }
+  setTimeout(() => $('#btnCopySql').textContent = 'Chép đoạn SQL', 1500);
+};
+
+function fillCfgForm(){
+  $$('input[name=be]').forEach(r => { r.checked = (r.value === CFG.backend); });
+  $('#sbUrl').value = CFG.sbUrl || '';
+  $('#sbKey').value = CFG.sbKey || '';
+  $('#gasUrl').value = CFG.gasUrl || '';
+  $('#sheetUrl').value = CFG.sheetUrl || '';
+  syncCfgVisibility();
+}
+function pickedBackend(){
+  const r = $$('input[name=be]').find(x => x.checked);
+  return r ? r.value : 'local';
+}
+function syncCfgVisibility(){
+  const b = pickedBackend();
+  $('#cfgSupabase').hidden = (b !== 'supabase');
+  $('#cfgGas').hidden = (b !== 'gas');
+  $$('.opt').forEach(o => o.classList.toggle('sel', o.dataset.be === b));
+}
+$$('input[name=be]').forEach(r => r.addEventListener('change', syncCfgVisibility));
+
+$('#btnCfgSave').onclick = () => {
+  if (BAKED_ON)
+    return say('#cfgStatus','File đang nhúng sẵn cấu hình — sửa dòng BAKED_CFG trong file thay vì lưu ở đây.','err');
+  CFG.backend  = pickedBackend();
+  CFG.sbUrl    = $('#sbUrl').value.trim().replace(/\/+$/,'');
+  CFG.sbKey    = $('#sbKey').value.trim();
+  CFG.gasUrl   = $('#gasUrl').value.trim();
+  CFG.sheetUrl = $('#sheetUrl').value.trim();
+  saveCfg(); renderModeBar();
+  adminPin = ''; adminData = [];
+  $('#pinBox').hidden = false; $('#admBody').hidden = true; $('#pinChangeBox').hidden = true;
+  say('#cfgStatus','Đã lưu. Bấm Kiểm tra kết nối để chắc chắn.','ok');
+};
+$('#btnCfgTest').onclick = () => busy($('#btnCfgTest'), async () => {
+  const saved = JSON.stringify(CFG);
+  CFG.backend  = pickedBackend();
+  CFG.sbUrl    = $('#sbUrl').value.trim().replace(/\/+$/,'');
+  CFG.sbKey    = $('#sbKey').value.trim();
+  CFG.gasUrl   = $('#gasUrl').value.trim();
+  say('#cfgStatus','Đang kiểm tra…','busy');
+  try{
+    await api('ping');
+    say('#cfgStatus','Kết nối tốt. Nhớ bấm Lưu cài đặt.','ok');
+  }catch(err){
+    Object.assign(CFG, JSON.parse(saved));
+    say('#cfgStatus', err.message, 'err');
+  }
+});
+
+function shareCfg(){
+  if (CFG.backend === 'supabase') return { backend:'supabase', sbUrl:CFG.sbUrl, sbKey:CFG.sbKey };
+  if (CFG.backend === 'gas')      return { backend:'gas', gasUrl:CFG.gasUrl };
+  return { backend:'local' };
+}
+$('#btnShare').onclick = () => {
+  const cfg = shareCfg();
+  const base = location.origin + location.pathname;
+  const link = base + '#cfg=' + b64e(JSON.stringify(cfg));
+  if (CFG.backend === 'local'){
+    $('#shareHint').textContent = 'Đang ở chế độ "Chỉ máy này" — link chia sẻ không mang theo dữ liệu. Hãy chọn Supabase hoặc Google Sheet trước, hoặc gửi thẳng file index.html cho nhân viên và dùng cách "Gửi bằng mã".';
+    return;
+  }
+  if (location.protocol === 'file:'){
+    $('#shareHint').textContent = 'Trang này đang mở từ ổ đĩa nên chưa có link công khai. Làm theo hướng dẫn GitHub Pages bên dưới trước, rồi quay lại bấm nút này.';
+    return;
+  }
+  $('#shareHint').textContent = 'Link đã kèm sẵn cấu hình kết nối. Nhân viên chỉ cần mở link, điền tên và chọn ngày. Không gửi mã PIN quản lý cho ai.';
+  showText('Link gửi cho nhân viên', 'Gửi link này qua Zalo, email hoặc dán vào nhóm chat.', link);
+};
+$('#btnBake').onclick = () => {
+  const cfg = shareCfg();
+  if (cfg.backend === 'local')
+    return say('#cfgStatus','Đang ở chế độ "Chỉ máy này" nên không có gì để nhúng.','err');
+  const line = 'const BAKED_CFG = ' + JSON.stringify(cfg) + ';';
+  showText('Dòng cấu hình để nhúng vào file',
+    'Mở index.html bằng Notepad, tìm dòng bắt đầu bằng "const BAKED_CFG =" rồi thay bằng dòng dưới đây. ' +
+    'Sau đó ai mở file hay link cũng chạy đúng ngay, không cần tab Cài đặt.',
+    line);
+};
+$('#btnCfgCode').onclick = () => {
+  const cfg = shareCfg();
+  showText('Mã cài đặt',
+    'Dùng khi nhân viên mở file index.html trên máy họ: bảo họ thêm chuỗi này vào sau địa chỉ trang, hoặc tự điền lại thông số trong tab Cài đặt.',
+    '#cfg=' + b64e(JSON.stringify(cfg)));
+};
+
+/* ---------- thanh trạng thái chế độ ---------- */
+function renderModeBar(){
+  const b = CFG.backend;
+  const names = { local:'Chỉ lưu trên máy này', supabase:'Supabase', gas:'Google Sheet (Apps Script)' };
+  const ready = (b==='supabase' && CFG.sbUrl && CFG.sbKey) || (b==='gas' && CFG.gasUrl) || b==='local';
+  $('#btnSheet').hidden = !(b==='gas' && CFG.sheetUrl);
+  $('#bakedNote').hidden = !BAKED_ON;
+
+  /* Nhân viên không thấy tên nơi lưu dữ liệu lẫn hướng dẫn cấu hình. */
+  $('#modeBar').innerHTML = cfgUnlocked
+    ? '<span class="chip'+(b!=='local'&&ready?' on':'')+'"><span class="dot"></span>'+
+      'Nơi lưu dữ liệu: '+names[b]+(BAKED_ON?' · nhúng sẵn trong file':'')+'</span>'
+    : '';
+
+  const warn = $('#cfgWarn');
+  if (cfgUnlocked && b === 'local'){
+    warn.hidden = false; warn.className = 'banner';
+    warn.innerHTML = '<b>Chưa nối máy chủ.</b> Dữ liệu chỉ nằm trên trình duyệt này, máy khác không thấy. ' +
+      'Bấm <b>Cài đặt kết nối</b> để chọn Supabase hoặc Google Sheet. ' +
+      'Nếu muốn dùng luôn kiểu thủ công: nhân viên bấm <b>Gửi bằng mã</b>, quản lý bấm <b>Nhập mã nhân viên gửi</b>.';
+  } else if (cfgUnlocked && !ready){
+    warn.hidden = false; warn.className = 'banner bad';
+    warn.innerHTML = '<b>Thiếu thông số kết nối.</b> Bấm <b>Cài đặt kết nối</b> điền cho đủ rồi bấm Kiểm tra kết nối.';
+  } else if (!cfgUnlocked && !ready){
+    warn.hidden = false; warn.className = 'banner bad';
+    warn.innerHTML = '<b>Chưa gửi lịch được.</b> Trang chưa nối tới nơi lưu dữ liệu — báo quản lý để được gửi lại đường dẫn đúng.';
+  } else {
+    warn.hidden = true;
+  }
+}
+
+/* ---------- khởi động ---------- */
+(function(){
+  /* Đường cứu: mở trang với đuôi #setup để vào Cài đặt khi chưa cấu hình
+     được gì nên chưa đăng nhập quản lý được. */
+  if ((location.hash||'').toLowerCase() === '#setup'){
+    history.replaceState(null, '', location.pathname + location.search);
+    unlockCfg(); fillCfgForm(); showTab('cfg');
+  }
+  renderModeBar();
+  try{
+    const me = JSON.parse(LS.g('wsched:me') || 'null');
+    if (me && me.name){ $('#empName').value = me.name; $('#empDept').value = me.dept || ''; }
+  }catch(e){}
+  const hadDraft = restoreDraft();
+  renderCal(); markRev();
+  if (hadDraft) showDraftNote(true);
+  fillCfgForm();
+  if ($('#empName').value.trim() && !hadDraft) loadMine(true);
+})();
+</script>
+</html>
