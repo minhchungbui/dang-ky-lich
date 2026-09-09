@@ -616,7 +616,7 @@ const DEF_CFG = { backend:'local', sbUrl:'', sbKey:'', gasUrl:'', sheetUrl:'' };
    Lấy sẵn dòng để dán: Quản lý -> Cài đặt kết nối -> "Nhúng
    cài đặt vào file", rồi chép đè lên dòng BAKED_CFG bên dưới.
    ============================================================ */
-const BAKED_CFG = {"backend":"gas","gasUrl":"https://script.google.com/macros/s/AKfycbxVUTCYU7vGyUjWirTjkeYnASSwo4HP-NGavT7XhmLHlAQIHz8mSf07JvZBknRd2V48/exec"};
+const BAKED_CFG = {"backend":"gas","gasUrl":"https://script.google.com/macros/s/AKfycbxbxNrcLd_2W7I_TsE1GYMWaVFyx6PPi1wzjG4e2uYAf04eWHODD_HB3nmu-tp8GjY/exec"};
 
 let CFG = Object.assign({}, DEF_CFG);
 try { const s = localStorage.getItem(CFG_KEY); if (s) Object.assign(CFG, JSON.parse(s)); } catch(e){}
